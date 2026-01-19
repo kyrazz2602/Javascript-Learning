@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Bubbling vs Capturing</title>
+  <style>
+    /* --- 1. TEMA WARNA (Dark Mode) --- */
+    :root {
+      --bg-body: #121212;
+      --text-main: #e0e0e0;
+      --grandparent-bg: #b00020; /* Merah Gelap */
+      --parent-bg: #3700b3;      /* Biru Gelap */
+      --child-bg: #03dac6;       /* Teal/Hijau */
+      --log-bg: #1e1e1e;
+    }
+
+    /* --- 2. LAYOUT --- */
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Segoe UI', monospace;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    h2 { margin-bottom: 5px; color: #bb86fc; }
+    p { color: #aaa; margin-top: 0; }
+
+    /* --- 3. KOTAK BERTUMPUK (VISUALISASI) --- */
+    .box {
+      padding: 30px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .box:hover {
+      border-color: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    /* Warna spesifik untuk tiap level */
+    #grandparent {
+      background-color: var(--grandparent-bg);
+      width: 300px;
+    }
+
+    #parent {
+      background-color: var(--parent-bg);
+      width: 200px;
+      margin: 0 auto; /* Tengah secara horizontal */
+    }
+
+    #child {
+      background-color: var(--child-bg);
+      color: black;
+      width: 100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* --- 4. LOG AREA --- */
+    #logArea {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--log-bg);
+      border: 1px solid #333;
+      padding: 10px;
+      border-radius: 8px;
+      height: 250px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      border-bottom: 1px solid #333;
+      padding: 4px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Warna teks log berdasarkan fase */
+    .capture-phase { color: #ff80ab; } /* Pink muda */
+    .bubble-phase { color: #80d8ff; }  /* Biru muda */
+
+    button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    button:hover { background-color: #555; }
+
+  </style>
+</head>
+<body>
+
+  <div align="center">
+    <h2>Visualisasi Event Flow</h2>
+    <p>Klik kotak paling dalam (Child) dan lihat urutannya.</p>
+  </div>
+
+  <div id="grandparent" class="box">
+    Grandparent (Kakek)
+    
+    <div id="parent" class="box">
+      Parent (Bapak)
+      
+      <div id="child" class="box">
+        Child (Anak)
+      </div>
+    
+    </div>
+  </div>
+
+  <div id="logArea">
+    <div style="color: #666; font-style: italic;">Log aktivitas akan muncul di sini...</div>
+  </div>
+  <button onclick="clearLog()">Bersihkan Log</button>
+
+<script>
+  /* --- SETUP VARIABEL --- */
+  const grandparent = document.getElementById('grandparent');
+  const parent = document.getElementById('parent');
+  const child = document.getElementById('child');
+  const logBox = document.getElementById('logArea');
+
+  /* --- FUNGSI PENCATAT LOG --- */
+  function logEvent(elementName, phase) {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    
+    // Tentukan warna dan ikon berdasarkan fase
+    let phaseClass = '';
+    let icon = '';
+    
+    if (phase === 'Capturing') {
+      phaseClass = 'capture-phase';
+      icon = '⬇️ (Turun)';
+    } else {
+      phaseClass = 'bubble-phase';
+      icon = '⬆️ (Naik)';
+    }
+
+    entry.innerHTML = `
+      <span class="${phaseClass}">[${phase}] ${icon}</span> 
+      <span>${elementName}</span>
+    `;
+    
+    // Masukkan log baru ke paling atas
+    logBox.prepend(entry);
+  }
+
+  function clearLog() {
+    logBox.innerHTML = '';
+  }
+
+  /* --- INTI MATERI: EVENT LISTENERS --- */
+
+  // 1. FASE CAPTURING (Penangkapan - Dari Luar ke Dalam)
+  // Perhatikan parameter ketiga: true
+  grandparent.addEventListener('click', (e) => {
+    // e.stopPropagation(); // Uncomment ini jika ingin menghentikan event di sini
+    logEvent('Grandparent', 'Capturing');
+  }, true);
+
+  parent.addEventListener('click', (e) => {
+    logEvent('Parent', 'Capturing');
+  }, true);
+
+  child.addEventListener('click', (e) => {
+    logEvent('Child', 'Capturing');
+  }, true);
+
+
+  // 2. FASE BUBBLING (Gelembung - Dari Dalam ke Luar)
+  // Perhatikan parameter ketiga: false (atau tidak ditulis, defaultnya false)
+  grandparent.addEventListener('click', (e) => {
+    logEvent('Grandparent', 'Bubbling');
+  }, false);
+
+  parent.addEventListener('click', (e) => {
+    logEvent('Parent', 'Bubbling');
+  }, false);
+
+  child.addEventListener('click', (e) => {
+    logEvent('Child', 'Bubbling');
+  }, false);
+
+</script>
+</body>
+</html>

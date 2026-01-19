@@ -1,0 +1,105 @@
+:root {
+    --bg-color: #121212;        /* Hitam pekat untuk latar belakang utama */
+    --card-bg: #1e1e1e;         /* Abu-abu gelap untuk area konten */
+    --text-primary: #e0e0e0;    /* Putih gading untuk teks utama */
+    --text-secondary: #b0b0b0;  /* Abu-abu untuk teks sekunder */
+    --accent-color: #bb86fc;    /* Ungu muda untuk aksen menarik */
+    --button-bg: #2d2d2d;       /* Warna dasar tombol */
+    --button-hover: #3700b3;    /* Warna tombol saat disentuh */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font yang modern */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Menengahkan semua konten secara horizontal */
+}
+
+#main {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px; /* Sudut melengkung */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Efek bayangan */
+    max-width: 500px;
+    text-align: center;
+    width: 100%;
+}
+h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+}
+img {
+    border-radius: 10px;
+    border: 2px solid var(--accent-color);
+    max-width: 100%;
+    height: auto;
+}
+
+#caption {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+button {
+    width: 250px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    background-color: var(--button-bg);
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+    color: #000000;
+    transform: scale(1.02); 
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #555;
+}
+  
+button:disabled:hover {
+    background-color: var(--button-bg);
+    color: var(--text-primary);
+    transform: none;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), var(--accent-color), rgba(0, 0, 0, 0));
+    margin: 20px 0;
+    width: 100%;
+}
+
+#links ul, #daftar {
+    text-align: left;
+    display: inline-block;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

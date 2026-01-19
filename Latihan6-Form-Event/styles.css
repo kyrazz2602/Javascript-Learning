@@ -1,0 +1,129 @@
+/* styles.css */
+
+/* 1. Variabel Warna (Palet Dark Mode) */
+:root {
+  --bg-body: #121212;       /* Hitam pekat */
+  --bg-card: #1e1e1e;       /* Abu-abu gelap */
+  --text-primary: #e0e0e0;  /* Putih gading */
+  --text-secondary: #b0b0b0;/* Abu-abu terang */
+  --accent: #bb86fc;        /* Ungu (Aksen utama) */
+  --accent-hover: #3700b3;  /* Ungu gelap (saat hover) */
+  --danger: #cf6679;        /* Merah (Peringatan) */
+  --input-bg: #2d2d2d;      /* Latar input */
+  --border-color: #333;     /* Warna garis tepi */
+}
+
+/* 2. Reset & Body */
+body {
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Menengahkan horizontal */
+  align-items: center;     /* Menengahkan vertikal */
+  min-height: 100vh;       /* Tinggi minimal setinggi layar */
+}
+
+/* 3. Kartu Utama */
+.card {
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Bayangan */
+  width: 100%;
+  max-width: 400px; /* Lebar maksimal agar rapi */
+  border: 1px solid var(--border-color);
+}
+
+h2 {
+  color: var(--accent);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+/* 4. Elemen Form */
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Styling Input agar modern */
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  box-sizing: border-box; /* Agar padding tidak melebarkan input */
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent); /* Warna ungu saat diklik */
+}
+
+input[readonly] {
+  cursor: copy;
+  opacity: 0.7;
+}
+
+/* 5. Notifikasi & Hint */
+.char-count {
+  font-size: 0.85rem;
+  margin-top: 5px;
+  color: var(--text-secondary);
+  visibility: hidden; /* Tersembunyi default */
+  min-height: 20px;   /* Menjaga tempat agar tidak lompat layout */
+}
+
+.hint-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 5px;
+}
+
+/* 6. Gambar Captcha */
+.captcha-box {
+  background-color: #fff; /* Tetap putih agar gambar jelas */
+  padding: 5px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+/* 7. Tombol Submit */
+button {
+  background-color: var(--accent);
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+  color: white;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+}

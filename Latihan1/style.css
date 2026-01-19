@@ -1,0 +1,157 @@
+/* =========================================
+   RESET & GLOBAL STYLES
+   ========================================= */
+/* Membersihkan margin/padding bawaan browser */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Agar padding tidak menambah lebar elemen */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font modern */
+  background-color: #f4f4f4; /* Abu-abu muda agar mata nyaman */
+  line-height: 1.6;
+  color: #333;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+header {
+  background-color: #333; /* Warna gelap */
+  color: #fff;            /* Teks putih */
+  text-align: center;
+  padding: 1rem;
+  border-bottom: 3px solid #77b300; /* Garis aksen hijau di bawah header */
+}
+
+header h1 {
+  font-weight: 400;
+}
+
+/* =========================================
+   CONTAINER (KOTAK UTAMA)
+   ========================================= */
+.container {
+  max-width: 500px;     /* Lebar maksimal agar tidak terlalu lebar di PC */
+  margin: 2rem auto;    /* auto = posisi tengah horizontal */
+  padding: 2rem;
+  background: #fff;     /* Latar putih */
+  border-radius: 8px;   /* Sudut melengkung */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Bayangan halus */
+}
+
+/* =========================================
+   FORM STYLING
+   ========================================= */
+#my-form {
+  padding: 10px;
+}
+
+#my-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#my-form label {
+  display: block;       /* Agar label baris sendiri di atas input */
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* Styling Input Text dan Email sekaligus */
+#my-form input[type="text"],
+#my-form input[type="email"] {
+  width: 100%;          /* Memenuhi lebar container */
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Efek saat input diklik/fokus */
+#my-form input[type="text"]:focus,
+#my-form input[type="email"]:focus {
+  outline: none;
+  border-color: #77b300; /* Berubah hijau saat diketik */
+}
+
+/* =========================================
+   BUTTON STYLING
+   ========================================= */
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;       /* Kursor jadi tangan */
+  font-size: 16px;
+  transition: background 0.3s; /* Animasi perubahan warna */
+}
+
+button[type="submit"]:hover {
+  background-color: #444; /* Sedikit lebih terang saat di-hover */
+}
+
+/* =========================================
+   USER LIST (HASIL INPUT)
+   ========================================= */
+#users {
+  list-style: none; /* Hilangkan titik bullet */
+  margin-top: 20px;
+}
+
+/* Nanti saat JS menambahkan <li>, style ini akan aktif */
+#users li {
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between; /* Persiapan jika ada tombol hapus */
+}
+
+/* =========================================
+   UTILITY CLASS (Untuk JavaScript Nanti)
+   ========================================= */
+/* Class untuk pesan error */
+.error {
+  background: orangered;
+  color: #fff;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Class untuk latar gelap (opsional) */
+.bg-dark {
+  background: #333;
+  color: #fff;
+}
+
+/* ... kode sebelumnya ... */
+
+/* Tombol Hapus (Delete Button) */
+.delete-btn {
+  background-color: #ff4444; /* Merah */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  float: right; /* Geser ke kanan mentok */
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.delete-btn:hover {
+  background-color: #cc0000; /* Merah lebih gelap saat hover */
+}

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Storage Game - Tebak Angka</title>
+  <style>
+    /* --- CSS VARIABLES (Tema Warna) --- */
+    :root {
+      /* Tema Terang (Default) */
+      --bg-body: #f4f4f4;
+      --bg-card: #ffffff;
+      --text-main: #333333;
+      --text-secondary: #555555;
+      --border-color: #cccccc;
+      --shadow-color: rgba(0,0,0,0.1);
+      --btn-primary: #007bff;
+      --btn-primary-hover: #0056b3;
+      --btn-danger: #dc3545;
+      --btn-danger-hover: #a71d2a;
+      --btn-success: #28a745;
+      --btn-success-hover: #218838;
+      --btn-text: #ffffff;
+    }
+
+    /* Tema Gelap (Akan aktif jika body punya class "dark-mode") */
+    body.dark-mode {
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --text-main: #e0e0e0;
+      --text-secondary: #b0b0b0;
+      --border-color: #444444;
+      --shadow-color: rgba(0,0,0,0.5);
+      --btn-primary: #375a7f;
+      --btn-primary-hover: #2b4764;
+      --btn-danger: #c0392b;
+      --btn-danger-hover: #962d22;
+      --btn-success: #27ae60;
+      --btn-success-hover: #219150;
+    }
+
+    /* --- BASE STYLES --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-body); /* Menggunakan Variabel */
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.3s, color 0.3s; /* Animasi transisi halus */
+    }
+
+    h1 { color: var(--text-main); }
+    h2 { color: var(--text-secondary); margin-bottom: 10px; }
+    hr { border: 1px solid var(--border-color); width: 90%; margin-bottom: 20px; }
+
+    /* Layout Container */
+    .contents {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .child-content {
+      background: var(--bg-card);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px var(--shadow-color);
+      padding: 20px;
+      flex: 1 1 300px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.3s;
+    }
+
+    /* Styling Tombol */
+    .button {
+      background-color: var(--btn-primary);
+      color: var(--btn-text);
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    .button:hover { background-color: var(--btn-primary-hover); }
+    
+    .button.danger { background-color: var(--btn-danger); }
+    .button.danger:hover { background-color: var(--btn-danger-hover); }
+
+    .answer-button {
+      background-color: var(--btn-success);
+      color: var(--btn-text);
+      border: none;
+      padding: 15px;
+      font-size: 1.5rem;
+      width: 60px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .answer-button:hover { background-color: var(--btn-success-hover); }
+
+    /* Tombol Theme Switcher (Pojok Kanan Atas) */
+    #theme-toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    #theme-toggle-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Instruksi List */
+    #instructions-list {
+      text-align: left;
+      padding-left: 20px;
+      color: var(--text-main);
+    }
+    #instructions-list li { margin-bottom: 8px; }
+
+    .hidden { display: none !important; }
+    
+    .display-answer {
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 5px;
+      color: var(--text-main);
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+<button id="theme-toggle-btn" title="Ganti Tema">☀️</button>
+<h1>Permainan Tebak Angka '123'</h1>
+
+<div class="contents">
+  
+  <div class="child-content" id="total-stats">
+    <h2>Statistik Lokal</h2>
+    <hr>
+    <div id="all-local-stats">
+      <div class="stat-item">
+        <h3>Jumlah Menang:</h3>
+        <h3 id="local-total-victory-field">0</h3>
+      </div>
+      <div class="stat-item">
+        <h3>Tebakan Salah Terbanyak:</h3>
+        <h3 id="local-maximum-attempt-field">0</h3>
+      </div>
+      <button class="button danger" id="destroy-data-button">Hapus Semua Data</button>
+    </div>
+  </div>
+
+  <div class="child-content" id="gameboard">
+    <h2>Papan Permainan</h2>
+    <hr>
+    
+    <div id="before-game-display">
+      <h3>Siap bermain?</h3>
+      <button class="button" id="play-button">Bermain</button>
+    </div>
+
+    <div id="during-game-display" class="hidden">
+      <h3>Tebak 3 angka acak!</h3>
+      <p>Jawaban Anda:</p>
+      <div class="display-answer" id="session-user-answer-field"></div>
+      
+      <div>
+        <button class="answer-button" id="answer-1-button">1</button>
+        <button class="answer-button" id="answer-2-button">2</button>
+        <button class="answer-button" id="answer-3-button">3</button>
+      </div>
+      
+      <p id="feedback-message" style="color: var(--btn-danger); font-weight: bold; height: 1.5em;"></p>
+    </div>
+
+    <div id="after-game-display" class="hidden">
+      <h3>Selamat! Tebakan Benar!</h3>
+      <p>Jawabannya adalah:</p>
+      <div class="display-answer" id="session-true-answer-field"></div>
+      <button class="button" id="reset-button">Main Lagi</button>
+    </div>
+  </div>
+
+  <div class="child-content" id="session-stats">
+    <h2>Statistik Sesi Ini</h2>
+    <hr>
+    <div id="all-session-stats">
+      <div class="session-stat-item">
+        <h3>Jumlah Tebakan Salah:</h3>
+        <h3 id="session-user-attempts-amount-field">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="child-content" id="instructions">
+    <h2>Cara Bermain</h2>
+    <hr>
+    <ul id="instructions-list">
+      <li>Tebak kombinasi 3 angka dari angka "1", "2", dan "3".</li>
+      <li>Contoh jawaban: "231", "123", "312".</li>
+      <li>Setiap angka hanya muncul <strong>sekali</strong> (Tidak ada "112" atau "222").</li>
+      <li>Jika salah, jumlah percobaan akan bertambah.</li>
+      <li><i>Have fun and don't cheat!</i></li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  // --- KONFIGURASI KEY STORAGE ---
+  const SESSION_ANSWER_KEY = 'SESSION_ANSWER';
+  const SESSION_USER_ATTEMPTS_KEY = 'SESSION_USER_ATTEMPTS';
+  const LOCAL_TOTAL_VICTORY_KEY = 'LOCAL_TOTAL_VICTORIES_PLAYED';
+  const LOCAL_MAX_ATTEMPTS_KEY = 'LOCAL_MAXIMUM_ATTEMPTS';
+  const LOCAL_THEME_KEY = 'LOCAL_THEME_PREFERENCE';
+
+  // --- SELEKSI ELEMEN DOM ---
+  const elements = {
+    localVictory: document.getElementById('local-total-victory-field'),
+    localMaxAttempt: document.getElementById('local-maximum-attempt-field'),
+    sessionAttempts: document.getElementById('session-user-attempts-amount-field'),
+    userAnswer: document.getElementById('session-user-answer-field'),
+    trueAnswer: document.getElementById('session-true-answer-field'),
+    feedback: document.getElementById('feedback-message'),
+    
+    // Screens
+    beforeGame: document.getElementById('before-game-display'),
+    duringGame: document.getElementById('during-game-display'),
+    afterGame: document.getElementById('after-game-display'),
+    
+    // Buttons
+    playBtn: document.getElementById('play-button'),
+    resetBtn: document.getElementById('reset-button'),
+    destroyBtn: document.getElementById('destroy-data-button'),
+    themeBtn: document.getElementById('theme-toggle-btn'),
+    ans1: document.getElementById('answer-1-button'),
+    ans2: document.getElementById('answer-2-button'),
+    ans3: document.getElementById('answer-3-button'),
+  };
+
+  // --- FUNGSI UTAMA ---
+
+  // 1. Inisialisasi Game saat Halaman Dimuat
+  window.addEventListener('load', function () {
+    if (typeof (Storage) !== 'undefined') {
+      initializeTheme();
+      initializeStorage();
+      resetSessionData();
+      updateDisplay();
+    } else {
+      alert('Browser Anda tidak mendukung Web Storage');
+    }
+  });
+
+  // 2. Menyiapkan nilai default di Storage jika belum ada
+  function initializeStorage() {
+    // Session Storage (Data Sementera - hilang saat tab ditutup)
+    // Local Storage (Data Persisten - tetap ada walau browser ditutup)
+    if (localStorage.getItem(LOCAL_TOTAL_VICTORY_KEY) === null) {
+      localStorage.setItem(LOCAL_TOTAL_VICTORY_KEY, 0);
+    }
+    if (localStorage.getItem(LOCAL_MAX_ATTEMPTS_KEY) === null) {
+      localStorage.setItem(LOCAL_MAX_ATTEMPTS_KEY, 0);
+    }
+    if (localStorage.getItem(LOCAL_THEME_KEY) === null) {
+      localStorage.setItem(LOCAL_THEME_KEY, 'light');
+    }
+  }
+
+  // 3. Update tampilan angka di layar berdasarkan data Storage
+  function updateDisplay() {
+    elements.sessionAttempts.innerText = sessionStorage.getItem(SESSION_USER_ATTEMPTS_KEY);
+    elements.localVictory.innerText = localStorage.getItem(LOCAL_TOTAL_VICTORY_KEY);
+    elements.localMaxAttempt.innerText = localStorage.getItem(LOCAL_MAX_ATTEMPTS_KEY);
+  }
+
+  // 4. Logika Membuat Jawaban Acak (Fisher-Yates Shuffle sederhana)
+  function getAnswer() {
+    let array = ['1', '2', '3'];
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array.join('');
+  }
+
+  function resetSessionData() {
+    sessionStorage.setItem(SESSION_USER_ATTEMPTS_KEY, 0);
+    sessionStorage.removeItem(SESSION_ANSWER_KEY); // Hapus jawaban lama
+    elements.userAnswer.innerText = "";
+  }
+
+  // --- LOGIKA TEMA (DARK/LIGHT MODE) ---
+  
+  function initializeTheme() {
+    const savedTheme = localStorage.getItem(LOCAL_THEME_KEY);
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      elements.themeBtn.innerText = '🌙'; // Ikon Bulan
+    } else {
+      document.body.classList.remove('dark-mode');
+      elements.themeBtn.innerText = '☀️'; // Ikon Matahari
+    }
+  }
+
+  elements.themeBtn.addEventListener('click', function() {
+    // Toggle class pada body
+    document.body.classList.toggle('dark-mode');
+    
+    // Cek apakah sekarang dark mode aktif
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Simpan preferensi ke Local Storage
+    if (isDarkMode) {
+      localStorage.setItem(LOCAL_THEME_KEY, 'dark');
+      elements.themeBtn.innerText = '🌙';
+    } else {
+      localStorage.setItem(LOCAL_THEME_KEY, 'light');
+      elements.themeBtn.innerText = '☀️';
+    }
+  });
+
+  // --- EVENT LISTENERS (INTERAKSI USER) ---
+
+  // Tombol BERMAIN
+  elements.playBtn.addEventListener('click', function () {
+    const answer = getAnswer();
+    sessionStorage.setItem(SESSION_ANSWER_KEY, answer);
+    sessionStorage.setItem(SESSION_USER_ATTEMPTS_KEY, 0); // Reset attempts
+    
+    elements.beforeGame.classList.add('hidden');
+    elements.duringGame.classList.remove('hidden');
+    elements.userAnswer.innerText = ""; // Reset tampilan input user
+    elements.feedback.innerText = "";
+    updateDisplay();
+  });
+
+  // Tombol INPUT ANGKA (1, 2, 3)
+  function handleInput(number) {
+    if (elements.userAnswer.innerText.length < 3) {
+      elements.userAnswer.innerText += number;
+    }
+
+    if (elements.userAnswer.innerText.length === 3) {
+      checkAnswer(elements.userAnswer.innerText);
+    }
+  }
+
+  elements.ans1.addEventListener('click', () => handleInput('1'));
+  elements.ans2.addEventListener('click', () => handleInput('2'));
+  elements.ans3.addEventListener('click', () => handleInput('3'));
+
+  // Logika Pengecekan Jawaban
+  function checkAnswer(userGuess) {
+    const correctAnswer = sessionStorage.getItem(SESSION_ANSWER_KEY);
+
+    if (userGuess === correctAnswer) {
+      // JIKA BENAR
+      elements.duringGame.classList.add('hidden');
+      elements.afterGame.classList.remove('hidden');
+      elements.trueAnswer.innerText = correctAnswer;
+      updateScore();
+    } else {
+      // JIKA SALAH
+      let attempts = parseInt(sessionStorage.getItem(SESSION_USER_ATTEMPTS_KEY));
+      attempts++;
+      sessionStorage.setItem(SESSION_USER_ATTEMPTS_KEY, attempts);
+      
+      elements.feedback.innerText = `Kombinasi "${userGuess}" salah, coba lagi!`;
+      elements.userAnswer.innerText = ""; // Reset input
+      updateDisplay();
+    }
+  }
+
+  // Update Score (Menang & High Score)
+  function updateScore() {
+    // Cek High Score (Mencari jumlah tebakan salah terbanyak)
+    const sessionAttempts = parseInt(sessionStorage.getItem(SESSION_USER_ATTEMPTS_KEY));
+    const localMaxAttempts = parseInt(localStorage.getItem(LOCAL_MAX_ATTEMPTS_KEY));
+
+    if (sessionAttempts > localMaxAttempts) {
+      localStorage.setItem(LOCAL_MAX_ATTEMPTS_KEY, sessionAttempts);
+    }
+
+    // Update Total Kemenangan
+    const totalVictory = parseInt(localStorage.getItem(LOCAL_TOTAL_VICTORY_KEY));
+    localStorage.setItem(LOCAL_TOTAL_VICTORY_KEY, totalVictory + 1);
+    updateDisplay();
+  }
+
+  // Tombol MAIN LAGI (Reset tanpa reload halaman)
+  elements.resetBtn.addEventListener('click', function(){
+    elements.afterGame.classList.add('hidden');
+    elements.beforeGame.classList.remove('hidden');
+    elements.userAnswer.innerText = "";
+    elements.feedback.innerText = "";
+  });
+
+  // Tombol HAPUS SEMUA DATA
+  elements.destroyBtn.addEventListener('click', function () {
+    if(confirm("Apakah Anda yakin ingin menghapus semua riwayat permainan?")) {
+      // Hapus data Session
+      sessionStorage.removeItem(SESSION_ANSWER_KEY);
+      sessionStorage.removeItem(SESSION_USER_ATTEMPTS_KEY);
+      
+      // Hapus data Local (PERBAIKAN UTAMA DI SINI)
+      localStorage.removeItem(LOCAL_TOTAL_VICTORY_KEY);
+      localStorage.removeItem(LOCAL_MAX_ATTEMPTS_KEY);
+
+      alert('Data berhasil dihapus. Halaman akan dimuat ulang.');
+      location.reload();
+    }
+  });
+
+  // Reset input saat tab ditutup/refresh
+  window.addEventListener('beforeunload', function () {
+    elements.userAnswer.innerText = '';
+    
+  });
+
+</script>
+</body>
+</html>

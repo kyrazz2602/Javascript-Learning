@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Event World</title>
+  
+  <style>
+    /* --- 1. TEMA WARNA (Dark Mode) --- */
+    :root {
+      --bg-body: #121212;       /* Hitam pekat */
+      --bg-card: #1e1e1e;       /* Abu-abu gelap */
+      --text-main: #e0e0e0;     /* Putih gading */
+      --accent: #03dac6;        /* Teal/Hijau Tosca (Warna Aksen) */
+      --btn-bg: #bb86fc;        /* Ungu (Warna Tombol) */
+      --btn-hover: #3700b3;     /* Ungu Gelap */
+    }
+
+    /* --- 2. LAYOUT DASAR --- */
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      height: 100vh;            /* Tinggi layar penuh */
+      display: flex;            /* Flexbox untuk menengahkan */
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* --- 3. KARTU KONTEN --- */
+    .card {
+      background-color: var(--bg-card);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      text-align: center;
+      width: 350px;
+    }
+
+    h3 {
+      margin-top: 0;
+      color: var(--accent);
+      min-height: 50px; /* Menjaga tinggi agar tidak melompat saat teks berubah */
+    }
+
+    /* --- 4. TOMBOL --- */
+    .button {
+      background-color: var(--btn-bg);
+      color: #000; /* Teks hitam agar kontras dengan ungu */
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .button:hover {
+      background-color: var(--btn-hover);
+      color: #fff;
+      transform: scale(1.05); /* Efek membesar sedikit */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h3 id="caption">Silakan tekan tombol di bawah...</h3>
+    
+    <button class="button" id="tombol">Trigger Custom Event</button>
+  </div>
+
+  <script>
+    /* * --- BAGIAN 1: DEFINISI CUSTOM EVENT ---
+     * Kita membuat sebuah objek event baru dengan nama "gantiCaption".
+     * Nama ini bebas (terserah kita), berbeda dengan event bawaan seperti 'click'.
+     */
+    const eventGantiCaption = new Event("gantiCaption");
+
+    /* * --- BAGIAN 2: LOGIKA UTAMA ---
+     * Kita menunggu halaman selesai dimuat (load) sebelum menjalankan skrip.
+     */
+    window.addEventListener("load", function() {
+      
+      const tombol = document.getElementById("tombol");
+      const caption = document.getElementById("caption");
+
+      // A. MENDAFTARKAN CUSTOM EVENT LISTENER
+      // Kita menyuruh tombol untuk 'mendengarkan' event bernama 'gantiCaption'.
+      // Jika event ini terpanggil, jalankan fungsi 'customEventHandler'.
+      tombol.addEventListener('gantiCaption', customEventHandler);
+
+      // B. TRIGGER (PEMICU)
+      // Karena user hanya bisa melakukan 'click' (bukan langsung 'gantiCaption'),
+      // maka kita pasang event 'click' biasa.
+      // Di dalam click, kita "memancarkan" (dispatch) event buatan kita.
+      tombol.addEventListener('click', function() {
+        
+        // dispatchEvent adalah "pemantik". Ia berteriak: "Woy, event gantiCaption terjadi nih!"
+        tombol.dispatchEvent(eventGantiCaption); 
+        
+      });
+    });
+
+    /* * --- BAGIAN 3: FUNGSI HANDLER ---
+     * Fungsi ini hanya akan jalan jika event "gantiCaption" di-dispatch.
+     */
+    function customEventHandler(ev) {
+      // Menampilkan log di console browser (F12) untuk debugging
+      console.log('Event tipe: ' + ev.type + ' berhasil dijalankan!');
+      
+      // Mengubah tampilan teks
+      const caption = document.getElementById("caption");
+      caption.innerHTML = "✨ Custom Event Berhasil Dijalankan! ✨";
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Penyimpanan Data User</title>
+  <style>
+    /* --- CSS: Styling Tampilan --- */
+    
+    /* Reset dasar agar tampilan konsisten di semua browser */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    /* Container utama menggunakan Flexbox */
+    .container {
+      display: flex;
+      flex-wrap: wrap; /* Agar turun ke bawah jika layar kecil (HP) */
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    /* Gaya untuk Kartu (Form dan Tabel) */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      flex: 1; /* Kedua kolom berbagi ruang rata */
+      min-width: 300px; /* Lebar minimum agar tidak gepeng di HP */
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #555;
+      text-align: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    /* Gaya Form */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], 
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    /* Tombol Submit */
+    .btn-submit {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff; /* Biru */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+
+    /* Tombol Hapus Data */
+    .btn-clear {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #dc3545; /* Merah */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-clear:hover {
+      background-color: #a71d2a;
+    }
+
+    /* Gaya Tabel */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    
+    .empty-message {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Daftar Pengguna Baru</h1>
+
+  <div class="container">
+    
+    <section class="card">
+      <h2>Isi Data User</h2>
+      <form id="form-data-user">
+        <div class="form-group">
+          <label for="nama">Nama Lengkap:</label>
+          <input id="nama" type="text" placeholder="Contoh: Budi Santoso" maxlength="20" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="umur">Umur:</label>
+          <input id="umur" type="number" placeholder="Contoh: 25" max="100" min="1" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="domisili">Domisili:</label>
+          <input id="domisili" type="text" placeholder="Contoh: Jakarta" maxlength="20" required>
+        </div>
+        
+        <button type="submit" class="btn-submit">Simpan Data</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Riwayat User (Maks. 5)</h2>
+      <table id="user-list-table">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Umur</th>
+            <th>Domisili</th>
+          </tr>
+        </thead>
+        <tbody id="user-list-detail">
+          </tbody>
+      </table>
+      <div id="empty-state" class="empty-message" style="display: none;">
+        Belum ada data user.
+      </div>
+      <button id="clear-data-button" class="btn-clear">Hapus Semua Data</button>
+    </section>
+
+  </div>
+
+<script>
+  // --- 1. KONFIGURASI KEY & SELECTOR ---
+  const STORAGE_KEY = 'APLIKASI_DATA_USER';
+  
+  // Mengambil elemen HTML agar bisa dimanipulasi
+  const formUser = document.getElementById('form-data-user');
+  const tableBody = document.getElementById('user-list-detail');
+  const emptyState = document.getElementById('empty-state');
+  const clearButton = document.getElementById('clear-data-button');
+
+  // --- 2. FUNGSI UTILITAS (LOGIKA STORAGE) ---
+
+  // Cek apakah browser mendukung LocalStorage
+  function isStorageSupported() {
+    return typeof (Storage) !== 'undefined';
+  }
+
+  // Mengambil data dari LocalStorage dan mengubahnya jadi Array asli (JSON.parse)
+  function getUserList() {
+    if (!isStorageSupported()) return [];
+    
+    const serializedData = localStorage.getItem(STORAGE_KEY);
+    if (serializedData === null) {
+      return [];
+    }
+    return JSON.parse(serializedData);
+  }
+
+  // Menyimpan Array ke LocalStorage dengan mengubahnya jadi String (JSON.stringify)
+  function saveUserList(data) {
+    if (isStorageSupported()) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  }
+
+  // --- 3. FUNGSI LOGIKA DOM (TAMPILAN) ---
+
+  // Fungsi untuk menampilkan data ke tabel HTML
+  function renderUserList() {
+    const userData = getUserList();
+    
+    // Reset isi tabel agar tidak duplikat saat dirender ulang
+    tableBody.innerHTML = '';
+
+    // Cek jika data kosong
+    if (userData.length === 0) {
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+      
+      // Loop setiap user dan buat baris tabel (row)
+      for (let user of userData) {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user.nama}</td>
+          <td>${user.umur} Tahun</td>
+          <td>${user.domisili}</td>
+        `;
+        tableBody.appendChild(row);
+      }
+    }
+  }
+
+  // --- 4. EVENT LISTENERS (INTERAKSI) ---
+
+  // Saat halaman selesai dimuat
+  window.addEventListener('load', function () {
+    if (isStorageSupported()) {
+      // Jika key belum ada, buat array kosong
+      if (localStorage.getItem(STORAGE_KEY) === null) {
+        saveUserList([]);
+      }
+      renderUserList();
+    } else {
+      alert('Maaf, browser Anda tidak mendukung Web Storage. Data tidak akan tersimpan.');
+    }
+  });
+
+  // Saat Form di-Submit (Tombol Simpan ditekan)
+  formUser.addEventListener('submit', function (event) {
+    // PENTING: Mencegah halaman refresh otomatis
+    event.preventDefault(); 
+
+    // Ambil nilai dari input field
+    const inputNama = document.getElementById('nama').value;
+    const inputUmur = document.getElementById('umur').value;
+    const inputDomisili = document.getElementById('domisili').value;
+
+    // Buat object user baru
+    const newUser = {
+      nama: inputNama,
+      umur: inputUmur,
+      domisili: inputDomisili,
+    };
+
+    // Ambil data lama, tambah data baru
+    let currentData = getUserList();
+    
+    // LOGIKA QUEUE (ANTRIAN): 
+    // Masukkan data baru di paling atas (awal array)
+    currentData.unshift(newUser); 
+
+    // Jika data lebih dari 5, hapus yang paling lama (terakhir)
+    if (currentData.length > 5) {
+      currentData.pop(); 
+    }
+
+    // Simpan ke storage & update tampilan
+    saveUserList(currentData);
+    renderUserList();
+
+    // Reset form agar kosong kembali
+    formUser.reset();
+  });
+
+  // Tombol Hapus Semua Data
+  clearButton.addEventListener('click', function() {
+    if (confirm('Apakah Anda yakin ingin menghapus semua data user?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      renderUserList();
+      alert('Data berhasil dihapus');
+    }
+  });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+/* --- 1. VARIABEL & SETUP --- */
+:root {
+    --primary-color: #BB86FC;
+    --primary-variant: #3700B3;
+    --secondary-color: #03DAC6;
+    --background-color: #121212;
+    --surface-color: #1E1E1E;
+    --text-primary: #E0E0E0;
+    --text-secondary: #A0A0A0;
+    --error-color: #CF6679;
+    
+    --border-radius: 16px;
+    --shadow-soft: 0 4px 6px rgba(0,0,0,0.3);
+    --shadow-hover: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* --- 2. DEFINISI ANIMASI (KEYFRAMES) --- */
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Raleway', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    overflow-x: hidden; 
+}
+
+/* --- HEADER --- */
+header {
+    background: var(--surface-color);
+    padding: 20px;
+    color: var(--primary-color);
+    text-align: center;
+    border-bottom: 2px solid var(--primary-variant);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+/* --- LAYOUT UTAMA --- */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    animation: fadeIn 0.8s ease-in-out; 
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px; 
+    border-radius: var(--border-radius);
+    margin: 16px 0;
+    background: var(--surface-color);
+    padding: 24px;
+    height: fit-content;
+    transition: box-shadow 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 0 15px var(--primary-variant);
+}
+
+/* --- FORM --- */
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* INPUT */
+input[type=text], input[type=date] {
+    font-family: 'Raleway', sans-serif;
+    background: #2C2C2C;
+    color: white;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 16px; /* 16px mencegah auto-zoom pada iOS */
+    width: 100%;
+    transition: all 0.3s ease; 
+}
+
+input[type=text]:focus, input[type=date]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 12px rgba(187, 134, 252, 0.4);
+    transform: scale(1.01);
+}
+
+/* TOMBOL SUBMIT */
+.btn-submit {
+    width: 100%;
+    font-family: 'Raleway', sans-serif;
+    border-radius: var(--border-radius);
+    padding: 16px; /* Padding diperbesar sedikit agar enak ditekan */
+    background-color: var(--primary-color);
+    border: none;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn-submit:hover {
+    background: var(--primary-variant);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(187, 134, 252, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(187, 134, 252, 0.4);
+}
+
+/* --- ITEM DAFTAR TUGAS --- */
+ul.list-item {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.item {
+    border-radius: var(--border-radius);
+    margin-top: 16px;
+    padding: 20px;
+    background: #2C2C2C;
+    display: flex;
+    justify-content: space-between; /* Memisahkan teks dan tombol */
+    align-items: center;
+    border-left: 5px solid var(--primary-color);
+    box-shadow: var(--shadow-soft);
+    animation: slideInUp 0.5s ease-out forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
+}
+
+.item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    background: #333;
+}
+
+.item > .inner {
+    flex: 1; /* Teks mengambil sisa ruang yang ada */
+    padding-right: 10px; /* Jarak antara teks dan tombol */
+}
+
+.item > .inner h2 {
+    margin: 0;
+    font-size: 1.25rem; /* Menggunakan rem agar skalabel */
+    color: var(--text-primary);
+    word-break: break-word; /* Mencegah teks panjang keluar container */
+}
+
+.item > .inner p {
+    margin-top: 8px;
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* --- TOMBOL AKSI (Check, Trash, Undo) --- */
+.check-button, .trash-button, .undo-button {
+    width: 36px; /* Sedikit diperbesar */
+    height: 36px;
+    margin-left: 8px;
+    cursor: pointer;
+    border: none;
+    background-size: 24px; /* Ukuran icon di dalam tombol */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent; /* Background tombol transparan */
+    border-radius: 50%; /* Efek lingkaran saat hover */
+    filter: invert(1); 
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+}
+
+/* Efek background lingkaran halus saat hover tombol aksi */
+.check-button:hover, .trash-button:hover, .undo-button:hover {
+   background-color: rgba(255, 255, 255, 0.1); 
+}
+
+.check-button {
+    background-image: url('../assets/check-outline.svg');
+}
+.check-button:hover {
+    transform: scale(1.1) rotate(-10deg);
+    background-image: url('../assets/check-solid.svg');
+}
+
+.trash-button {
+    background-image: url('../assets/trash-outline.svg');
+}
+.trash-button:hover {
+    transform: scale(1.1) rotate(10deg);
+    background-image: url('../assets/trash-fill.svg');
+}
+
+.undo-button {
+    background-image: url('../assets/undo-ouline.svg');
+}
+.undo-button:hover {
+    transform: scale(1.1) rotate(-360deg);
+    transition: transform 0.5s ease;
+}
+
+/* --- TOAST NOTIFICATION --- */
+#toast {
+    visibility: hidden; /* Tersembunyi secara default */
+    min-width: 250px;
+    background-color: var(--primary-color); /* Ungu terang */
+    color: black; /* Teks hitam agar kontras */
+    text-align: center;
+    border-radius: 30px; /* Bentuk lonjong */
+    padding: 16px;
+    position: fixed; /* Melayang di atas elemen lain */
+    z-index: 100; /* Pastikan di paling atas layer */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 17px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* Class ini akan ditambahkan lewat JS saat toast muncul */
+#toast.show {
+    visibility: visible;
+    /* Animasi: Muncul (0.5s), Diam, lalu Menghilang (0.5s) setelah 2.5 detik */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animasi Muncul (Dari sedikit bawah ke tengah) */
+@-webkit-keyframes fadein {
+    from {top: 60%; opacity: 0;} 
+    to {top: 50%; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {top: 60%; opacity: 0;}
+    to {top: 50%; opacity: 1;}
+}
+
+/* Animasi Menghilang (Turun sedikit sambil memudar) */
+@-webkit-keyframes fadeout {
+    from {top: 50%; opacity: 1;} 
+    to {top: 60%; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {top: 50%; opacity: 1;}
+    to {top: 60%; opacity: 0;}
+}
+
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+
+/* 1. Tablet & Layar Kecil (Max width 768px) */
+@media (max-width: 768px) {
+    .container {
+        width: 95%; /* Container sedikit melebar */
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* 2. Mobile (Max width 480px) */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .container {
+        width: 100%;
+        margin: 10px 0;
+        padding: 16px;
+    }
+
+    /* Ubah layout item menjadi bertumpuk (Stack) */
+    .item {
+        flex-direction: column;
+        align-items: flex-start; /* Rata kiri */
+        padding: 16px;
+    }
+    
+    .item > .inner {
+        width: 100%;
+        margin-bottom: 12px; /* Beri jarak antara teks dan tombol */
+        padding-right: 0;
+    }
+
+    .item > .inner h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Wrapper imajiner untuk tombol agar ada di kanan bawah */
+    /* Kita gunakan selector ini karena tombol adalah children langsung dari .item */
+    .item > button {
+        align-self: flex-end; /* Tombol pindah ke kanan */
+        margin-left: 12px; /* Jarak antar tombol */
+    }
+
+    /* Perbesar area sentuh untuk jari */
+    .check-button, .trash-button, .undo-button {
+        width: 44px;
+        height: 44px;
+        background-size: 28px;
+    }
+}
